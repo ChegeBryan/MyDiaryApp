@@ -1,12 +1,13 @@
 language: python
 python:
   - "3.6"
-
+r
 install:
   - pip install -r requirements.txt
 script:
   - pytest
- branches:
-    only:
-    - develop
-    - master
+
+branches:
+  only:
+   - develop
+   - master
