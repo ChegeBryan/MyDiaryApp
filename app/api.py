@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, abort
 from app import app
 
 ENTRIES = [
@@ -34,3 +34,15 @@ def get_all_entries():
     success is 200
     """
     return jsonify({'entries': ENTRIES}), 200
+
+
+@app.route('/api/v1/entries/<int:entry_id>', methods=['GET'])
+def get_entry_id(entry_id):
+    """
+     Endpoint to get an entry by id
+    """
+    # create a list of one item = entry specified
+    entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
+    if not entry:
+        abort(404)
+    return jsonify({'entry': entry[0]}), 200
