@@ -25,3 +25,12 @@ def create_entry():
     }
     ENTRIES.append(entry)
     return jsonify({'entries': ENTRIES}), 201
+
+
+@app.route('/api/v1/entries', methods=['GET'])
+def get_all_entries():
+    """
+    Endpoint to get all the entries in the diary
+    success is 200
+    """
+    return jsonify({'entries': ENTRIES}), 200
