@@ -51,7 +51,7 @@ class EntryTestCase(unittest.TestCase):
     def test_api_can_get_entry_by_id(self):
         """
         Tests api can get a single entry by id (GET request)
-        Succesfull status code 200
+        Successful status code 200
         """
         response = self.client.post(
             '/api/v1/entries',
@@ -63,3 +63,22 @@ class EntryTestCase(unittest.TestCase):
             json=self.entry
         )
         self.assertEqual(id_response.status_code, 200)
+
+    def test_api_can_update_an_entry(self):
+        """
+        Tests api can update a particular entry (PUT request)
+        Success status code 201
+        """
+        response = self.client.post(
+            '/api/v1/entries',
+            json=self.entry
+        )
+        self.assertEqual(response.status_code, 201)
+        response = self.client.put(
+            '/api/v1/entries/1',
+            json={
+                'title': 'just edit',
+                'journal': 'thats not what really happened'
+            }
+        )
+        self.assertEqual(response.status_code, 201)
