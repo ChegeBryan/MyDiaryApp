@@ -21,5 +21,13 @@ class EntryTestCase(unittest.TestCase):
             'journal': 'using flask to develop api endpoints'
         }
 
-    def tearDown(self):
-        pass
+    def test_api_create_entry(self):
+        """
+        Test api can create entry (POST request)
+        successful status code 201
+        """
+        response = self.client.post(
+            '/api/v1/entries',
+            json=self.entry
+        )
+        self.assertEqual(response.status_code, 201)
