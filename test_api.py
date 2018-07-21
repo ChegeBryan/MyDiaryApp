@@ -31,3 +31,19 @@ class EntryTestCase(unittest.TestCase):
             json=self.entry
         )
         self.assertEqual(response.status_code, 201)
+
+    def test_api_can_get_all_entries(self):
+        """
+        Tests api endpoint can get all the entries (GET request)
+        successful status code 200
+        """
+        response = self.client.post(
+            '/api/v1/entries',
+            json=self.entry
+        )
+        self.assertEqual(response.status_code, 201)
+        all_response =self.client.get(
+            '/api/v1/entries',
+            json=self.entry
+        )
+        self.assertEqual(all_response.status_code, 200)
