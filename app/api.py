@@ -46,3 +46,32 @@ def get_entry_id(entry_id):
     if not entry:
         abort(404)
     return jsonify({'entry': entry[0]}), 200
+
+
+@app.route('/api/v1/entries/<int:entry_id>', methods=['PUT'])
+def modify_an_entry(entry_id):
+    """
+    Endpoint to modify and entry
+    """
+    # put the entry in the list with the the specific id
+    # abort if not found
+    entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
+    if not entry:
+        abort(404)
+
+    req_data = request.get_json()
+
+    # check if entry doesnt contain both title and journal
+    # abort if none with a not found
+    if 'title' and 'journal' not in req_data:
+        abort(404)
+    # abort with bad request when title and journal or both
+    # are not strings
+    if 'title' in req_data and not isinstance(req_data['title'], str):
+        abort(400)
+    if 'journal' in req_data and not isinstance(req_data['journal'], str):
+        abort(400)
+
+    entry[0]['title'] = req_data['title']
+    entry[0]['journal'] = req_data['journal']
+    return jsonify({'entry': entry[0]}), 201
