@@ -1,3 +1,7 @@
+""""
+test_api.py contains the various test cases for the api endpoints
+
+"""
 import unittest
 from app import app
 from instance.config import config_environment
