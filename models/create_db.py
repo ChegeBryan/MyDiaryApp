@@ -14,6 +14,8 @@ username VARCHAR NOT NULL UNIQUE,
 email VARCHAR NOT NULL UNIQUE,
 password VARCHAR NOT NULL);''')
 
+print('Entries table created')
+
 cur.execute('''CREATE TABLE entries(
 id serial,
 user_id INTEGER NOT NULL,
@@ -26,4 +28,4 @@ FOREIGN KEY (user_id) REFERENCES users(id));''')
 
 conn.commit()
 conn.close()
-print('Table create: success')
+print('Entries table created success')
