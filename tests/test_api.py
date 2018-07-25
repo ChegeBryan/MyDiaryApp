@@ -35,6 +35,7 @@ class EntryTestCase(unittest.TestCase):
             json=self.entry,
             content_type='application/javascript'
         )
+
         self.assertTrue(response['status'] == 'failed')
         self.assertTrue(response['message'] == 'content-type must be application/json')
         self.assertEqual(response.statu_code, 401)

@@ -2,6 +2,7 @@
 
 from flask import request, jsonify, abort
 from app import app
+from flask.views import MethodView
 
 ENTRIES = [
     {
@@ -12,68 +13,72 @@ ENTRIES = [
 ]
 
 
-@app.route('/api/v1/entries', methods=['POST'])
-def create_entry():
-    """
-    Create an entry into the journal endpoint
-    201 response
-    """
-    # parse entry to json
-    req_data = request.get_json()
-    entry = {
-        'id': ENTRIES[-1]['id'] + 1,
-        'title': req_data['title'],
-        'journal': req_data['journal'],
-    }
-    ENTRIES.append(entry)
-    return jsonify({'entries': ENTRIES}), 201
+class EntryAPI(MethodView):
+    """Class implements the api endpoints using Methodvieww"""
+
+    def get(self, entry_id):
+        """
+        Endpoint to get all the entries in the diary if no id supplied
+        else return a specific entry
+        :return 200 success
+        :return 404 no entry found
+        """
+
+        if entry_id is None:
+            return jsonify({'entries': ENTRIES}), 200
+        else:
+            # create a list of one item = entry specified
+            entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
+            if not entry:
+                abort(404)
+            return jsonify({'entry': entry[0]}), 200
+
+    def post(self):
+        """
+        Create an entry into the journal
+        :return 201 Created OK
+        """
+        # parse entry to json
+        request_data = request.get_json()
+        entry = {
+            'id': ENTRIES[-1]['id'] + 1,
+            'title': request_data['title'],
+            'journal': request_data['journal'],
+        }
+        ENTRIES.append(entry)
+        return jsonify({'entries': ENTRIES}), 201
+
+    def put(self, entry_id):
+        """
+        Endpoint to modify and entry
+        """
+        # put the entry in the list with the the specific id
+        # abort if not found
+        entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
+        if not entry:
+            abort(404)
+
+        request_data = request.get_json()
+
+        # check if entry doesnt contain both title and journal
+        # abort if none with a not found
+        if 'title' and 'journal' not in request_data:
+            abort(404)
+        # abort with bad request when title and journal or both
+        # are not strings
+        if 'title' in request_data and not isinstance(request_data['title'], str):
+            abort(400)
+        if 'journal' in request_data and not isinstance(request_data['journal'], str):
+            abort(400)
+
+        entry[0]['title'] = request_data['title']
+        entry[0]['journal'] = request_data['journal']
+        return jsonify({'entry': entry[0]}), 201
 
 
-@app.route('/api/v1/entries', methods=['GET'])
-def get_all_entries():
-    """
-    Endpoint to get all the entries in the diary
-    success is 200
-    """
-    return jsonify({'entries': ENTRIES}), 200
-
-
-@app.route('/api/v1/entries/<int:entry_id>', methods=['GET'])
-def get_entry_id(entry_id):
-    """
-     Endpoint to get an entry by id
-    """
-    # create a list of one item = entry specified
-    entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
-    if not entry:
-        abort(404)
-    return jsonify({'entry': entry[0]}), 200
-
-
-@app.route('/api/v1/entries/<int:entry_id>', methods=['PUT'])
-def modify_an_entry(entry_id):
-    """
-    Endpoint to modify and entry
-    """
-    # put the entry in the list with the the specific id
-    # abort if not found
-    entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
-    if not entry:
-        abort(404)
-
-    req_data = request.get_json()
-
-    # check if entry doesnt contain both title and journal
-    # abort if none with a not found
-    if 'title' and 'journal' not in req_data:
-        abort(404)
-    # abort with bad request when title and journal or both
-    # are not strings
-    if 'title' in req_data and not isinstance(req_data['title'], str):
-        abort(400)
-    if 'journal' in req_data and not isinstance(req_data['journal'], str):
-        abort(400)
-
-    entry[0]['title'] = req_data['title']
-    entry[0]['journal'] = req_data['journal']
-    return jsonify({'entry': entry[0]}), 201
+entry_api_view = EntryAPI.as_view('entry_api')
+app.add_url_rule('/api/v1/entries', defaults={'entry_id': None},
+                 view_func=entry_api_view, methods=['GET'])
+app.add_url_rule('/api/v1/entries', view_func=entry_api_view, methods=['POST'])
+app.add_url_rule('/api/v1/entries/<int:entry_id>', view_func=entry_api_view,
+                 methods=['GET', 'PUT'])
