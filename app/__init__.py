@@ -1,3 +1,5 @@
+"""Creation of flask object"""
+
 from flask import Flask
 from instance.config import config_environment
 

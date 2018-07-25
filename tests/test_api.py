@@ -1,3 +1,7 @@
+""""
+test_api.py contains the various test cases for the api endpoints
+
+"""
 import unittest
 from app import app
 from instance.config import config_environment
@@ -20,6 +24,20 @@ class EntryTestCase(unittest.TestCase):
             'title': 'Just flask',
             'journal': 'using flask to develop api endpoints'
         }
+
+    def test_post_entry_content_type_is_json(self):
+        """
+        Tests if the content type of the header is returned
+        is in json format
+        """
+        response = self.client.post(
+            'api/v1/entries',
+            json=self.entry,
+            content_type='application/javascript'
+        )
+        self.assertTrue(response['status'] == 'failed')
+        self.assertTrue(response['message'] == 'content-type must be application/json')
+        self.assertEqual(response.statu_code, 401)
 
     def test_api_create_entry(self):
         """

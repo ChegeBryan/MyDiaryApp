@@ -1,3 +1,5 @@
+"""Defines the api endpoints"""
+
 from flask import request, jsonify, abort
 from app import app
 
