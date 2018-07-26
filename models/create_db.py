@@ -2,17 +2,16 @@ import psycopg2
 
 
 def connect_to_db():
-    conn = psycopg2.connect(database='my_diary_test',
-                            user='postgres', password='12345qwerty',
-                            host='localhost', port='5432')
+    create_connection = psycopg2.connect(database='my_diary_test',
+                                         user='postgres', password='12345qwerty',
+                                         host='localhost', port='5432')
 
     print('Opened database successfully')
 
-    return conn
+    return create_connection
 
 
 def create_user_tbl():
-
     cur.execute('''CREATE TABLE users(
       id serial PRIMARY KEY,
       username VARCHAR NOT NULL UNIQUE,
@@ -23,7 +22,6 @@ def create_user_tbl():
 
 
 def create_entries_tbl():
-
     cur.execute('''CREATE TABLE entries(
         id serial,
         user_id INTEGER NOT NULL,

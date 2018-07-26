@@ -38,7 +38,7 @@ class EntryTestCase(unittest.TestCase):
 
         self.assertTrue(response['status'] == 'failed')
         self.assertTrue(response['message'] == 'content-type must be application/json')
-        self.assertEqual(response.statu_code, 401)
+        self.assertEqual(response.statu_code, 400)
 
     def test_api_create_entry(self):
         """
