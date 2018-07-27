@@ -18,3 +18,18 @@ class User:
         cur.execute(sql, (self.username, self.email, self.password))
         conn.commit()
 
+    def get_users(self):
+        """Method to read the user table and return the users"""
+        sql = """SELECT * FROM users"""
+        cur = conn.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        return data
+
+
+
+
+
+
+class  Entries():
+
