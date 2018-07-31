@@ -82,3 +82,4 @@ app.add_url_rule('/api/v1/entries', defaults={'entry_id': None},
 app.add_url_rule('/api/v1/entries', view_func=entry_api_view, methods=['POST'])
 app.add_url_rule('/api/v1/entries/<int:entry_id>', view_func=entry_api_view,
                  methods=['GET', 'PUT'])
+

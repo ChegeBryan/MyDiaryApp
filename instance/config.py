@@ -1,5 +1,9 @@
 import os
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+postgres_local_base = 'postgres://postgres:@localhost/'
+database_name = 'my_diary'
+
 
 class Config:
     """
@@ -15,6 +19,7 @@ class DevelopmentConfig(Config):
     Configurations for development
     """
     DEBUG = True
+    DATABASE_URI = postgres_local_base + database_name
 
 
 class TestingConfig(Config):
@@ -23,6 +28,7 @@ class TestingConfig(Config):
     """
     TESTING = True
     DEBUG = True
+    DATABASE_URI = postgres_local_base + database_name + '_test'
 
 
 class ProductionConfig(Config):
