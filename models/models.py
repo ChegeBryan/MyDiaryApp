@@ -5,7 +5,7 @@ from app import app
 
 conn = connect_to_db()
 
-"""
+
 class User:
     """"Defines the user model"""
 
@@ -29,7 +29,6 @@ class User:
         cur.execute(sql)
         data = cur.fetchall()
         return data
-
 
     def generate_auth_token(user_id):
         """
