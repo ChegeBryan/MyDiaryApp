@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from .create_db import connect_to_db
-import jwt
 from passlib.hash import pbkdf2_sha256 as sha256
 conn = connect_to_db()
 
@@ -43,42 +42,6 @@ class User:
     def verify_hash_password(password, hash):
         """Method to decrypt hash password"""
         return sha256.verify(password, hash)
-
-    def generate_auth_token(self, user_id):
-        """
-        Generates the authentication token
-        :param user_id:
-        :return token string:
-        """
-        try:
-            payload = {
-                'exp': datetime.utcnow() + timedelta(seconds=21600),
-                'iat': datetime.utcnow(),
-                'sub': user_id,
-            }
-            return jwt.encode(
-                payload,
-                app.config.get('SECRET_KEY'),
-                algorithm='HS256'
-            )
-        except Exception as e:
-            return e
-
-    @staticmethod
-    def decode_auth_token(auth_token):
-        """
-        decode the auth token
-        :param auth_token:
-        :return integer|string:
-        """
-        try:
-            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
-            return payload['sub']
-        except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again'
-        except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again'
-
 
 class Entry:
 
