@@ -1,10 +1,8 @@
-from flask import request, jsonify, abort
+from flask import request, jsonify
 from app import app
 from flask.views import MethodView
 from models.models import User
-from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                jwt_required, jwt_refresh_token_required,
-                                get_jwt_identity, get_raw_jwt)
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 
 class UserRegistration(MethodView):
@@ -47,6 +45,7 @@ class UserLogin(MethodView):
                     return jsonify({'message': 'Log in unsuccessful'}), 404
         else:
             return jsonify({'Message': 'username must satisfy the minimum length'}), 400
+
 
 class UserLogout(MethodView):
     pass
