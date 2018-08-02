@@ -34,8 +34,11 @@ class UserLogin(MethodView):
                 user_password = user['password']
                 if User.verify_hash_password(password_candidate, user_password):
                     access_token = create_access_token(identity=user['username'])
+                    refresh_token = create_refresh_token(identity=user['username'])
                     return jsonify({'message': 'log in success',
-                                    'access_token': access_token}), 200
+                                    'access_token': access_token,
+                                    'refresh_token': refresh_token
+                                    }), 200
             else:
                 return jsonify({'message': 'Log in unsuccessful'}), 404
         else:
