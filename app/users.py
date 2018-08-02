@@ -10,7 +10,7 @@ class UserRegistration(MethodView):
         request_data = request.get_json()
         username = request_data['username']
         email = request_data['email']
-        password = request_data['password']
+        password = User.generate_hash_password(request_data['password'])
         user = User(username=username, email=email, password=password)
         user.add_user()
         return jsonify({'message': 'user created'}), 201
@@ -30,7 +30,7 @@ class UserLogin(MethodView):
             if user['username'] == user_candidate:
                 password_candidate = request_data['password']
                 user_password = user['password']
-                if password_candidate == user_password:
+                if User.verify_hash_password(password_candidate, user_password):
                     return jsonify({'message': 'log in success'}), 200
             else:
                 return jsonify({'message': 'Log in unsuccessful'}), 404
@@ -40,6 +40,7 @@ class UserLogin(MethodView):
 
 class UserLogout(MethodView):
     pass
+
 
 user_registration = UserRegistration.as_view('user_signup')
 user_login = UserLogin.as_view('user_login')

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from .create_db import connect_to_db
 import jwt
-import psycopg2.extras as extras
+from passlib.hash import pbkdf2_sha256 as sha256
 conn = connect_to_db()
 
 
@@ -35,13 +35,14 @@ class User:
         }
 
     @staticmethod
-    def get_user_by_email(email):
-        """Method to get user by id to enable token generation"""
-        sql = """SELECT * FROM users WHERE email=(%s)"""
-        cur = conn.cursor()
-        cur.execute(sql, (email,))
-        user = cur.fetchone()
-        return
+    def generate_hash_password(password):
+        """Method to encrypt password"""
+        return sha256.hash(password)
+
+    @staticmethod
+    def verify_hash_password(password, hash):
+        """Method to decrypt hash password"""
+        return sha256.verify(password, hash)
 
     def generate_auth_token(self, user_id):
         """
