@@ -45,11 +45,13 @@ class User:
 
 class Entry:
 
-    def __init__(self, title, journal):
+    def __init__(self, title, journal, user_id):
         self.title = title
         self.journal = journal
-        self.create_at = datetime.now()
+        self.user_id = user_id
+        self.created_at = datetime.now()
         self.last_modified_at = datetime.now()
+
 
     def save_entry(self):
         """Method to save an entry into the database"""
@@ -57,11 +59,10 @@ class Entry:
 
     def add_entry(self):
         """Method to add an entry into the database"""
-        sql = """INSERT INTO public.entries
-                (user_id, title, journal, create_at, last_modified_at)
-                VALUES('', '', '', '');"""
+        sql = """INSERT INTO entries(user_id,title, journal,create_at,last_modified_at)
+                VALUES(%s,%s,%s,%s,%s);"""
         cur = conn.cursor()
-        cur.execute(sql, (self.title, self.journal, self.create_at, self.last_modified_at))
+        cur.execute(sql, (self.user_id, self.title, self.journal, self.created_at,self.last_modified_at))
         self.save_entry()
 
     def get_entry_by_id(self):
