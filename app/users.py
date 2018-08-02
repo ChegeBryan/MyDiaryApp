@@ -25,12 +25,8 @@ class UserLogin(MethodView):
             return jsonify({'message': 'Provide all the necessary credentials'}), 404
         if len(request_data['username']) > 4:
             user_candidate = request_data['username']
-            print('am here')
             try:
                 user = User.get_user_by_username(user_candidate)
-            except:
-                return jsonify({'message': 'Log in unsuccessful'})
-            else:
                 if user['username'] == user_candidate:
                     password_candidate = request_data['password']
                     user_password = user['password']
@@ -41,8 +37,10 @@ class UserLogin(MethodView):
                                         'access_token': access_token,
                                         'refresh_token': refresh_token
                                         }), 200
-                else:
-                    return jsonify({'message': 'Log in unsuccessful'}), 404
+                    else:
+                        return jsonify({'message': 'Log in unsuccessful'}), 404
+            except:
+                return jsonify({'message': 'Log in unsuccessful'})
         else:
             return jsonify({'Message': 'username must satisfy the minimum length'}), 400
 
