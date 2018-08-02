@@ -20,7 +20,6 @@ class UserLogin(MethodView):
 
     def post(self):
         request_data = request.get_json()
-        print(request_data)
         if 'username' and 'password' not in request_data:
             return jsonify({'message': 'Provide all the necessary credentials'}), 404
         if len(request_data['username']) > 4:
@@ -28,11 +27,9 @@ class UserLogin(MethodView):
             user = User.get_user_by_username(user_candidate)
             if not user:
                 return jsonify({'message': 'Log in unsuccessful'})
-            if user[1] == user_candidate:
-                print('true')
+            if user['username'] == user_candidate:
                 password_candidate = request_data['password']
-                print(user)
-                user_password = user[-1]
+                user_password = user['password']
                 if password_candidate == user_password:
                     return jsonify({'message': 'log in success'}), 200
             else:
@@ -40,6 +37,9 @@ class UserLogin(MethodView):
         else:
             return jsonify({'Message': 'username must satisfy the minimum length'}), 400
 
+
+class UserLogout(MethodView):
+    pass
 
 user_registration = UserRegistration.as_view('user_signup')
 user_login = UserLogin.as_view('user_login')

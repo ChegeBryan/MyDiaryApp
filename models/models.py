@@ -27,7 +27,12 @@ class User:
         cur = conn.cursor()
         cur.execute(sql, (username,))
         data = cur.fetchone()
-        return data
+        return {
+            'id': data[0],
+            'username': data[1],
+            'email': data[2],
+            'password': data[3]
+        }
 
     @staticmethod
     def get_user_by_email(email):
@@ -36,7 +41,7 @@ class User:
         cur = conn.cursor()
         cur.execute(sql, (email,))
         user = cur.fetchone()
-        return user
+        return
 
     def generate_auth_token(self, user_id):
         """
