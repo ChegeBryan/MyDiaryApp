@@ -3,6 +3,8 @@
 from flask import request, jsonify, abort
 from app import app
 from flask.views import MethodView
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from models.models import Entry
 
 ENTRIES = [
     {
@@ -14,7 +16,27 @@ ENTRIES = [
 
 
 class EntryAPI(MethodView):
-    """Class implements the api endpoints using Methodvieww"""
+    """Class implements the api endpoints using GET, POST, PUT"""
+    @jwt_required
+    def post(self):
+        """
+        Create an entry into the journal
+        :return 201 Created OK
+        """
+        # parse entry to json
+        request_data = request.get_json()
+        title = request_data['title']
+        journal = request_data['journal']
+        created_by = get_jwt_identity()
+        if 'title' and 'journal' not in request_data:
+            return jsonify({'message': 'Provide the required data'})
+        if 'title' in request_data and not isinstance(request_data['title'], str):
+            return jsonify({'message': 'title cannot be empty'})
+        if 'journal' in request_data and not isinstance(request_data['title'], str):
+            return jsonify({'message': 'journal cannot be empty'})
+        entry = Entry(user_id=created_by, title=title, journal=journal)
+        entry.add_entry()
+        return jsonify({'message': 'entry saved'}), 201
 
     def get(self, entry_id):
         """
@@ -32,21 +54,6 @@ class EntryAPI(MethodView):
             if not entry:
                 abort(404)
             return jsonify({'entry': entry[0]}), 200
-
-    def post(self):
-        """
-        Create an entry into the journal
-        :return 201 Created OK
-        """
-        # parse entry to json
-        request_data = request.get_json()
-        entry = {
-            'id': ENTRIES[-1]['id'] + 1,
-            'title': request_data['title'],
-            'journal': request_data['journal'],
-        }
-        ENTRIES.append(entry)
-        return jsonify({'entries': ENTRIES}), 201
 
     def put(self, entry_id):
         """
