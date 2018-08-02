@@ -65,9 +65,23 @@ class Entry:
         cur.execute(sql, (self.user_id, self.title, self.journal, self.created_at,self.last_modified_at))
         self.save_entry()
 
+    @staticmethod
+    def get_entries(user_id):
+        """Method to return all entries by a user"""
+        sql = """SELECT * FROM entries WHERE user_id=%s"""
+        cur = conn.cursor()
+        cur.execute(sql, (user_id,))
+        data = cur.fetchall()
+        return {
+            'id': data[0],
+            'title': data[2],
+            'journal': data[3]
+        }
+
     def get_entry_by_id(self):
         """Method to return an entry by the id passed"""
-        pass
+
+
 
     def edit_entry(self):
         """Method to edit a specific entry"""
