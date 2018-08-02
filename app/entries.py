@@ -3,6 +3,8 @@
 from flask import request, jsonify, abort
 from app import app
 from flask.views import MethodView
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from models.models import Entry
 
 ENTRIES = [
     {
@@ -14,25 +16,8 @@ ENTRIES = [
 
 
 class EntryAPI(MethodView):
-    """Class implements the api endpoints using Methodvieww"""
-
-    def get(self, entry_id):
-        """
-        Endpoint to get all the entries in the diary if no id supplied
-        else return a specific entry
-        :return 200 success
-        :return 404 no entry found
-        """
-
-        if entry_id is None:
-            return jsonify({'entries': ENTRIES}), 200
-        else:
-            # create a list of one item = entry specified
-            entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
-            if not entry:
-                abort(404)
-            return jsonify({'entry': entry[0]}), 200
-
+    """Class implements the api endpoints using GET, POST, PUT"""
+    @jwt_required
     def post(self):
         """
         Create an entry into the journal
@@ -40,13 +25,37 @@ class EntryAPI(MethodView):
         """
         # parse entry to json
         request_data = request.get_json()
-        entry = {
-            'id': ENTRIES[-1]['id'] + 1,
-            'title': request_data['title'],
-            'journal': request_data['journal'],
-        }
-        ENTRIES.append(entry)
-        return jsonify({'entries': ENTRIES}), 201
+        if 'title' not in request_data:
+            return jsonify({'message': 'missing data in json request'}), 400
+        if 'journal' not in request_data:
+            return jsonify({'message': 'Missing data in json request'}), 400
+        if 'title' in request_data and not isinstance(request_data['title'], str):
+            return jsonify({'message': 'title cannot be empty'}), 400
+        if 'journal' in request_data and not isinstance(request_data['journal'], str):
+            return jsonify({'message': 'journal cannot be empty'}), 400
+        title = request_data['title']
+        journal = request_data['journal']
+        created_by = get_jwt_identity()
+        entry = Entry(user_id=created_by, title=title, journal=journal)
+        entry.add_entry()
+        return jsonify({'message': 'entry saved'}), 201
+
+    @jwt_required
+    def get(self, user_id):
+        """
+        Endpoint to get all the entries in the diary if for the user who is logged in
+        :return 200 success
+        :return 404 no entry found
+        """
+        user_id = get_jwt_identity()
+        if _id is None:
+            return jsonify({'entries': ENTRIES}), 200
+        else:
+            # create a list of one item = entry specified
+            entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
+            if not entry:
+                abort(404)
+            return jsonify({'entry': entry[0]}), 200
 
     def put(self, entry_id):
         """
