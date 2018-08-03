@@ -1,3 +1,5 @@
+import re
+
 from flask import request, jsonify
 from app import app
 from flask.views import MethodView
@@ -9,7 +11,19 @@ class UserRegistration(MethodView):
     """User registration route"""
     def post(self):
         request_data = request.get_json()
-        username = request_data['username']
+        if 'username' not in request_data:
+            return jsonify({'message': 'missing username in json request'}), 400
+        if 'email' not in request_data:
+            return jsonify({'message': 'missing email in json request'}), 400
+        if 'password' not in request_data:
+            return jsonify({'message': 'missing password in json request'}), 400
+        if 'username' in request_data and not request_data['username'].strip():
+            return jsonify({'message': 'title cannot be empty'}), 400
+        if 'email' in request_data and not request_data['email'].strip():
+            return jsonify({'message': 'journal cannot be empty'}), 400
+        if not re.match('[^@]+@[^@]+\.[^@]+',request_data['email']):
+            return jsonify({'message': 'email not valid'}), 400
+       username = request_data['username']
         email = request_data['email']
         password = User.generate_hash_password(request_data['password'])
         user = User(username=username, email=email, password=password)
