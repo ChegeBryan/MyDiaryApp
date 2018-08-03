@@ -26,12 +26,15 @@ class User:
         cur = conn.cursor()
         cur.execute(sql, (username,))
         data = cur.fetchone()
-        return {
-            'id': data[0],
-            'username': data[1],
-            'email': data[2],
-            'password': data[3]
-        }
+        if data:
+            return {
+                'id': data[0],
+                'username': data[1],
+                'email': data[2],
+                'password': data[3]
+            }
+        else:
+            return None
 
     @staticmethod
     def generate_hash_password(password):
@@ -72,11 +75,7 @@ class Entry:
         cur = conn.cursor()
         cur.execute(sql, (user_id,))
         data = cur.fetchall()
-        return {
-            'id': data[0],
-            'title': data[2],
-            'journal': data[3]
-        }
+        return data
 
     def get_entry_by_id(self):
         """Method to return an entry by the id passed"""

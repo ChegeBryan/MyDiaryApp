@@ -29,9 +29,14 @@ class UserRegistration(MethodView):
         username = request_data['username']
         email = request_data['email']
         password = User.generate_hash_password(request_data['password'])
-        user = User(username=username, email=email, password=password)
-        user.add_user()
-        return jsonify({'message': 'user created'}), 201
+        user = User.get_user_by_username(username)
+        if user is None:
+            user = User(username=username, email=email, password=password)
+            user.add_user()
+            return jsonify({'message': 'user created'}), 201
+        else:
+            return jsonify({'message': 'Choose a different username'}), 400
+
 
 
 class UserLogin(MethodView):
