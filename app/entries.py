@@ -41,8 +41,18 @@ class EntryAPI(MethodView):
         """
         user_id = get_jwt_identity()
         entries = Entry.get_entries(user_id)
-        print(entries)
-        return jsonify({'message': entries}), 200
+        all_entries = []
+        for entry in entries:
+            entry = {
+                'id': entry[0],
+                'user_id': entry[1],
+                'title': entry[2],
+                'journal': entry[3],
+                'created_at': entry[4],
+                'last_modified_at': entry[5]
+            }
+            all_entries.append(entry)
+        return jsonify({'Entries': all_entries}), 200
 
     def put(self, entry_id):
         """
