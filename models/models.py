@@ -37,6 +37,23 @@ class User:
             return None
 
     @staticmethod
+    def get_user_by_email(email):
+        """Method to read the user table and return the users"""
+        sql = """SELECT * FROM users WHERE email=%s"""
+        cur = conn.cursor()
+        cur.execute(sql, (email,))
+        data = cur.fetchone()
+        if data:
+            return {
+                'id': data[0],
+                'username': data[1],
+                'email': data[2],
+                'password': data[3]
+            }
+        else:
+            return None
+
+    @staticmethod
     def generate_hash_password(password):
         """Method to encrypt password"""
         return sha256.hash(password)
