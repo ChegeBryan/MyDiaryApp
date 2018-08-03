@@ -38,6 +38,7 @@ class UserRegistration(MethodView):
         else:
             return jsonify({'message': 'User with that email or username already exists.'}), 400
 
+
 class UserLogin(MethodView):
     """User log-in route"""
     def post(self):
@@ -46,24 +47,23 @@ class UserLogin(MethodView):
             return jsonify({'message': 'Provide all the necessary credentials'}), 404
         if len(request_data['username']) > 4:
             user_candidate = request_data['username']
-            try:
-                user = User.get_user_by_username(user_candidate)
-                if user['username'] == user_candidate:
-                    password_candidate = request_data['password']
-                    user_password = user['password']
-                    if User.verify_hash_password(password_candidate, user_password):
-                        access_token = create_access_token(identity=user['id'])
-                        refresh_token = create_refresh_token(identity=user['id'])
-                        return jsonify({'message': 'log in success',
-                                        'access_token': access_token,
-                                        'refresh_token': refresh_token
-                                        }), 200
-                    else:
-                        return jsonify({'message': 'Log in unsuccessful'}), 404
-            except:
-                return jsonify({'message': 'Log in unsuccessful'})
+            user = User.get_user_by_username(user_candidate)
+            if user:
+                password_candidate = request_data['password']
+                user_password = user['password']
+                if User.verify_hash_password(password_candidate, user_password):
+                    access_token = create_access_token(identity=user['id'])
+                    refresh_token = create_refresh_token(identity=user['id'])
+                    return jsonify({'message': 'log in success',
+                                    'access_token': access_token,
+                                    'refresh_token': refresh_token
+                                    }), 200
+                else:
+                    return jsonify({'message': 'Incorrect username or password'}), 404
+            else:
+                return jsonify({'message': 'Incorrect username or password'}), 404
         else:
-            return jsonify({'Message': 'username must satisfy the minimum length'}), 400
+            return jsonify({'Message': 'Invalid username'}), 400
 
 
 class UserLogout(MethodView):
