@@ -6,14 +6,6 @@ from flask.views import MethodView
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from models.models import Entry
 
-ENTRIES = [
-    {
-        'id': 1,
-        'title': 'again i did it',
-        'journal': 'always away from it'
-    }
-]
-
 
 class EntryAPI(MethodView):
     """Class implements the api endpoints using GET, POST, PUT"""
@@ -29,9 +21,9 @@ class EntryAPI(MethodView):
             return jsonify({'message': 'missing data in json request'}), 400
         if 'journal' not in request_data:
             return jsonify({'message': 'Missing data in json request'}), 400
-        if 'title' in request_data and not isinstance(request_data['title'], str):
+        if 'title' in request_data and not request_data['title'].strip():
             return jsonify({'message': 'title cannot be empty'}), 400
-        if 'journal' in request_data and not isinstance(request_data['journal'], str):
+        if 'journal' in request_data and not request_data['journal'].strip():
             return jsonify({'message': 'journal cannot be empty'}), 400
         title = request_data['title']
         journal = request_data['journal']
@@ -41,21 +33,16 @@ class EntryAPI(MethodView):
         return jsonify({'message': 'entry saved'}), 201
 
     @jwt_required
-    def get(self, user_id):
+    def get(self):
         """
         Endpoint to get all the entries in the diary if for the user who is logged in
         :return 200 success
         :return 404 no entry found
         """
         user_id = get_jwt_identity()
-        if _id is None:
-            return jsonify({'entries': ENTRIES}), 200
-        else:
-            # create a list of one item = entry specified
-            entry = [entry for entry in ENTRIES if entry['id'] == entry_id]
-            if not entry:
-                abort(404)
-            return jsonify({'entry': entry[0]}), 200
+        entries = Entry.get_entries(user_id)
+        print(entries)
+        return jsonify({'message': entries}), 200
 
     def put(self, entry_id):
         """
@@ -86,8 +73,7 @@ class EntryAPI(MethodView):
 
 
 entry_api_view = EntryAPI.as_view('entry_api')
-app.add_url_rule('/api/v1/entries', defaults={'entry_id': None},
-                 view_func=entry_api_view, methods=['GET'])
+app.add_url_rule('/api/v1/entries', view_func=entry_api_view, methods=['GET'])
 app.add_url_rule('/api/v1/entries', view_func=entry_api_view, methods=['POST'])
 app.add_url_rule('/api/v1/entries/<int:entry_id>', view_func=entry_api_view,
                  methods=['GET', 'PUT'])
