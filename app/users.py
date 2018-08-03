@@ -18,12 +18,15 @@ class UserRegistration(MethodView):
         if 'password' not in request_data:
             return jsonify({'message': 'missing password in json request'}), 400
         if 'username' in request_data and not request_data['username'].strip():
-            return jsonify({'message': 'title cannot be empty'}), 400
+            return jsonify({'message': 'username cannot be empty'}), 400
         if 'email' in request_data and not request_data['email'].strip():
-            return jsonify({'message': 'journal cannot be empty'}), 400
+            return jsonify({'message': 'email cannot be empty'}), 400
         if not re.match('[^@]+@[^@]+\.[^@]+',request_data['email']):
             return jsonify({'message': 'email not valid'}), 400
-       username = request_data['username']
+        if 'password' in request_data and not len(request_data['password']) > 6:
+            return jsonify({'message': 'Password does not meet the minimal length'})
+
+        username = request_data['username']
         email = request_data['email']
         password = User.generate_hash_password(request_data['password'])
         user = User(username=username, email=email, password=password)
