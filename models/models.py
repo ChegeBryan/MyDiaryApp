@@ -99,6 +99,7 @@ class Entry:
 
 
 
+
     def edit_entry(self):
         """Method to edit a specific entry"""
         pass

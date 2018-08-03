@@ -71,6 +71,14 @@ class EntryAPI(MethodView):
         entry[0]['journal'] = request_data['journal']
         return jsonify({'entry': entry[0]}), 201
 
+    @app.errorhandler(405)
+    def method_not_allowed(self):
+        return jsonify({'message': 'Method not allowed'})
+
+    @app.errorhandler(404)
+    def wrong_url(self):
+        return jsonify({'message': 'url not found'})
+
 
 entry_api_view = EntryAPI.as_view('entry_api')
 app.add_url_rule('/api/v1/entries', view_func=entry_api_view, methods=['GET'])

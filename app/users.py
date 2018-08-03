@@ -69,6 +69,14 @@ class UserLogin(MethodView):
 class UserLogout(MethodView):
     pass
 
+    @app.errorhandler(405)
+    def method_not_allowed(self):
+        return jsonify({'message': 'Method not allowed'})
+
+    @app.errorhandler(404)
+    def wrong_url(self):
+        return jsonify({'message': 'url not found'})
+
 
 user_registration = UserRegistration.as_view('user_signup')
 user_login = UserLogin.as_view('user_login')
