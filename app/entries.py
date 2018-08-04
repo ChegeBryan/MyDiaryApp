@@ -17,16 +17,21 @@ class EntryAPI(MethodView):
         """
         # parse entry to json
         request_data = request.get_json()
+        # Check if the required keys are in the json response
         if 'title' not in request_data:
             return jsonify({'message': 'missing data in json request'}), 400
         if 'journal' not in request_data:
             return jsonify({'message': 'Missing data in json request'}), 400
+
+        # strip whitespace to avoid making an empty title or journal entry
         if 'title' in request_data and not request_data['title'].strip():
             return jsonify({'message': 'title cannot be empty'}), 400
         if 'journal' in request_data and not request_data['journal'].strip():
             return jsonify({'message': 'journal cannot be empty'}), 400
         title = request_data['title']
         journal = request_data['journal']
+
+        # get the user who is logged in the and associate the entry with that user
         created_by = get_jwt_identity()
         entry = Entry(user_id=created_by, title=title, journal=journal)
         entry.add_entry()
@@ -39,6 +44,7 @@ class EntryAPI(MethodView):
         :return 200 success
         :return 404 no entry found
         """
+        # get the user who is logged in
         user_id = get_jwt_identity()
         entries = Entry.get_entries(user_id)
         all_entries = []
