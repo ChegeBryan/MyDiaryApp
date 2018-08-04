@@ -96,9 +96,7 @@ class Entry:
 
     def get_entry_by_id(self):
         """Method to return an entry by the id passed"""
-
-
-
+        pass
 
     def edit_entry(self):
         """Method to edit a specific entry"""

@@ -65,10 +65,6 @@ class UserLogin(MethodView):
         else:
             return jsonify({'Message': 'Invalid username'}), 400
 
-
-class UserLogout(MethodView):
-    pass
-
     @app.errorhandler(405)
     def method_not_allowed(self):
         return jsonify({'message': 'Method not allowed'})
