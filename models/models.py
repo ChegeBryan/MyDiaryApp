@@ -26,12 +26,32 @@ class User:
         cur = conn.cursor()
         cur.execute(sql, (username,))
         data = cur.fetchone()
-        return {
-            'id': data[0],
-            'username': data[1],
-            'email': data[2],
-            'password': data[3]
-        }
+        if data:
+            return {
+                'id': data[0],
+                'username': data[1],
+                'email': data[2],
+                'password': data[3]
+            }
+        else:
+            return None
+
+    @staticmethod
+    def get_user_by_email(email):
+        """Method to read the user table and return the users"""
+        sql = """SELECT * FROM users WHERE email=%s"""
+        cur = conn.cursor()
+        cur.execute(sql, (email,))
+        data = cur.fetchone()
+        if data:
+            return {
+                'id': data[0],
+                'username': data[1],
+                'email': data[2],
+                'password': data[3]
+            }
+        else:
+            return None
 
     @staticmethod
     def generate_hash_password(password):
@@ -45,11 +65,13 @@ class User:
 
 class Entry:
 
-    def __init__(self, title, journal):
+    def __init__(self, title, journal, user_id):
         self.title = title
         self.journal = journal
-        self.create_at = datetime.now()
+        self.user_id = user_id
+        self.created_at = datetime.now()
         self.last_modified_at = datetime.now()
+
 
     def save_entry(self):
         """Method to save an entry into the database"""
@@ -57,12 +79,20 @@ class Entry:
 
     def add_entry(self):
         """Method to add an entry into the database"""
-        sql = """INSERT INTO public.entries
-                (user_id, title, journal, create_at, last_modified_at)
-                VALUES('', '', '', '');"""
+        sql = """INSERT INTO entries(user_id,title, journal,create_at,last_modified_at)
+                VALUES(%s,%s,%s,%s,%s);"""
         cur = conn.cursor()
-        cur.execute(sql, (self.title, self.journal, self.create_at, self.last_modified_at))
+        cur.execute(sql, (self.user_id, self.title, self.journal, self.created_at,self.last_modified_at))
         self.save_entry()
+
+    @staticmethod
+    def get_entries(user_id):
+        """Method to return all entries by a user"""
+        sql = """SELECT * FROM entries WHERE user_id=%s"""
+        cur = conn.cursor()
+        cur.execute(sql, (user_id,))
+        data = cur.fetchall()
+        return data
 
     def get_entry_by_id(self):
         """Method to return an entry by the id passed"""
